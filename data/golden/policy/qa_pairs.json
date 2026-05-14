@@ -1,0 +1,50 @@
+[
+  {
+    "document": "sample_policy_1.pdf",
+    "question": "What are the criteria for biologic therapy authorization for asthma?",
+    "expected_keywords": ["severe persistent", "high-dose ICS", "LABA", "2 exacerbations", "prior authorization"],
+    "expected_page_refs": [1]
+  },
+  {
+    "document": "sample_policy_1.pdf",
+    "question": "What is the step therapy requirement for moderate persistent asthma?",
+    "expected_keywords": ["medium-dose ICS", "LABA", "inadequate control", "4 weeks"],
+    "expected_page_refs": [1]
+  },
+  {
+    "document": "sample_policy_1.pdf",
+    "question": "What medications are excluded from coverage?",
+    "expected_keywords": ["brand-name", "generic equivalent", "compounded", "nebulizers"],
+    "expected_page_refs": [1]
+  },
+  {
+    "document": "sample_policy_2.pdf",
+    "question": "How many cardiac rehabilitation sessions are covered?",
+    "expected_keywords": ["36 sessions", "12-week", "72 total"],
+    "expected_page_refs": [1]
+  },
+  {
+    "document": "sample_policy_2.pdf",
+    "question": "What conditions qualify for cardiac rehabilitation coverage?",
+    "expected_keywords": ["myocardial infarction", "bypass", "heart failure", "ejection fraction", "35%"],
+    "expected_page_refs": [1]
+  },
+  {
+    "document": "sample_policy_3.pdf",
+    "question": "What conservative treatments must be tried before joint replacement is approved?",
+    "expected_keywords": ["physical therapy", "6 weeks", "NSAIDs", "corticosteroid injection"],
+    "expected_page_refs": [1]
+  },
+  {
+    "document": "sample_policy_3.pdf",
+    "question": "What is the BMI requirement for total joint replacement?",
+    "expected_keywords": ["BMI", "40", "weight optimization"],
+    "expected_page_refs": [1]
+  },
+  {
+    "document": "sample_policy_3.pdf",
+    "question": "What post-operative services are covered after joint replacement?",
+    "expected_keywords": ["physical therapy", "12 weeks", "home health", "DME", "walker"],
+    "expected_page_refs": [1]
+  }
+]

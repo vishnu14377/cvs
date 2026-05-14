@@ -1,0 +1,83 @@
+app-name: careconnect-adr-ai-agent
+branch: release/2026.05.R1
+
+appData:
+  nameSpace: careconnect-ai-dev1
+  appVersion: latest
+  dockerHub: cvsh.jfrog.io
+  dockerImageGroupName: cvsdigital-docker/ghemu/cvs-health-source-code/careconnect-adr_ai_agent
+  dockerImageName: careconnect-adr_ai_agent
+  dockerImageTag: "c5dc71b0f3e229201d9b7806200efd5a9997be17"
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    cpu: "1"
+    memory: 1Gi
+
+hpaSettings:
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+
+workloadIdentity:
+  serviceAccountName: careconnect-adr-ai-agent
+  serviceAccountEmail: careconnect-ai-features@hcb-dev-careconnect-etl.iam.gserviceaccount.com
+  gcpProject: hcb-dev-careconnect-etl
+
+jwtVaultClusterScope:
+  vaultURL: "https://vault-nonprod.cvshealth.com"
+  tenant: "hcb-dev-careconnect-etl"
+  kubernetesCluster: "careconnect-gke"
+
+app:
+  name: careconnect-adr-ai-agent
+  port: 8000
+  gitRepoName: cvs-health-source-code/careconnect-adr_ai_agent
+
+istio:
+  currentAppVersion: "c5dc71b0f3e229201d9b7806200efd5a9997be17"
+  canaryAppVersion: "c5dc71b0f3e229201d9b7806200efd5a9997be17"
+  prodWeightage: 100
+  canaryWeightage: 0
+
+istioInternalHosts: |
+  - "internal-careconnect-ai-dev1.careconnect-gke.cvshealth.com"
+
+istioHttp: |
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: {{ .Values.app.name }}.{{ .Values.appData.nameSpace }}.svc.cluster.local
+        port:
+          number: {{ .Values.app.port }}
+        subset: {{ regexReplaceAll "\\W+" .Values.istio.currentAppVersion "-" }}
+      weight: {{ .Values.istio.prodWeightage | default 100 }}
+    - destination:
+        host: {{ .Values.app.name }}.{{ .Values.appData.nameSpace }}.svc.cluster.local
+        port:
+          number: {{ .Values.app.port }}
+        subset: {{ regexReplaceAll "\\W+" .Values.istio.canaryAppVersion "-" }}
+      weight: {{ .Values.istio.canaryWeightage | default 0 }}
+
+envVars: |
+  - name: APP_ENV
+    value: "production"
+  - name: LOG_LEVEL
+    value: "INFO"
+  - name: API_PORT
+    value: "8000"
+  - name: GCP_PROJECT_ID
+    value: "hcb-dev-careconnect-etl"
+  - name: GCS_BUCKET_NAME
+    value: "care_connect_ai_initiatives"
+  - name: AI_AGENT_PREFIX_GCS
+    value: "adr_ai_agent"
+  - name: API_AUTH_TOKEN
+    value: "B3yrXyB8MNyCJDgfUBP91OF6lRa39SPvxXQnvL6WgOA"
+  - name: CARECONNECT_WIDGET_TOKEN
+    value: "hNiHbg_XILOxoIUG1tep4j1UBU5TJu4uLPavz7aMZt4"

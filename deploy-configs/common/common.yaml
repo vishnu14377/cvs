@@ -1,0 +1,23 @@
+app:
+  name: careconnect-adr-ai-agent
+  port: 8000
+
+appData:
+  manifestRepo: https://github.com/cvs-health-source-code/careconnect_gkw-gke_nonprod_manifests
+
+argo:
+  project: default
+  manifestRepo: https://github.com/cvs-health-source-code/careconnect_gkw-gke_nonprod_manifests
+  notifyEmailList: ""
+
+livenessProbeDetails:
+  probePath: /health
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  failureThreshold: 3
+
+readinessProbeDetails:
+  probePath: /health
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  failureThreshold: 3

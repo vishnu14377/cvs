@@ -1,0 +1,50 @@
+[
+  {
+    "document": "sample_adr_1.pdf",
+    "question": "What is the primary diagnosis?",
+    "expected_keywords": ["asthma", "exacerbation", "acute"],
+    "expected_page_refs": [1]
+  },
+  {
+    "document": "sample_adr_1.pdf",
+    "question": "What medications were administered in the emergency department?",
+    "expected_keywords": ["albuterol", "ipratropium", "prednisone"],
+    "expected_page_refs": [1, 2]
+  },
+  {
+    "document": "sample_adr_1.pdf",
+    "question": "Why did the patient's symptoms worsen?",
+    "expected_keywords": ["maintenance inhaler", "fluticasone", "ran out", "cold air"],
+    "expected_page_refs": [1]
+  },
+  {
+    "document": "sample_adr_2.pdf",
+    "question": "What is the admission diagnosis?",
+    "expected_keywords": ["heart failure", "decompensated", "volume overload"],
+    "expected_page_refs": [1]
+  },
+  {
+    "document": "sample_adr_2.pdf",
+    "question": "What was the patient's ejection fraction?",
+    "expected_keywords": ["30%", "reduced"],
+    "expected_page_refs": [1]
+  },
+  {
+    "document": "sample_adr_2.pdf",
+    "question": "What are the discharge medications?",
+    "expected_keywords": ["furosemide", "lisinopril", "carvedilol", "metformin"],
+    "expected_page_refs": [1]
+  },
+  {
+    "document": "sample_adr_3.pdf",
+    "question": "What procedure was performed?",
+    "expected_keywords": ["knee", "arthroplasty", "total knee"],
+    "expected_page_refs": [1]
+  },
+  {
+    "document": "sample_adr_3.pdf",
+    "question": "What is the patient's current range of motion?",
+    "expected_keywords": ["5", "95", "degrees"],
+    "expected_page_refs": [1]
+  }
+]
