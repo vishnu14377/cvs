@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Unqork Mock Harness — CareConnect ADR</title>
+<style>
+  body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #f4f4f8; }
+  #toolbar { padding: 12px 16px; background: #2c3e50; color: #fff; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  #toolbar label { font-size: 13px; }
+  #toolbar select, #toolbar input, #toolbar button { padding: 6px 10px; font-size: 13px; }
+  #stage { padding: 20px; }
+  #help-modal { position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:200; }
+  #help-modal.active { display:flex; }
+  #help-modal .help-content { width:90%;max-width:720px;max-height:85vh;background:#fff;border-radius:8px;overflow-y:auto;padding:0; }
+  #help-modal .help-header { position:sticky;top:0;background:#2c3e50;color:#fff;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;border-radius:8px 8px 0 0; }
+  #help-modal .help-header h2 { margin:0;font-size:16px; }
+  #help-modal .help-close { background:none;border:none;color:#fff;font-size:22px;cursor:pointer; }
+  #help-modal .help-body { padding:20px;font-size:13px;line-height:1.7;color:#333; }
+  #help-modal h3 { color:#2c3e50;margin:20px 0 8px;font-size:14px;border-bottom:1px solid #eee;padding-bottom:4px; }
+  #help-modal h3:first-child { margin-top:0; }
+  #help-modal code { background:#f0f0f5;padding:1px 5px;border-radius:3px;font-size:12px; }
+  #help-modal pre { background:#1e1e2e;color:#e0e0e0;padding:10px 14px;border-radius:6px;font-size:11px;overflow-x:auto;white-space:pre-wrap; }
+  #help-modal ol, #help-modal ul { padding-left:20px; }
+  #help-modal li { margin-bottom:4px; }
+  #help-modal .mode-tag { display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;color:#fff; }
+  #help-modal .mode-tag.iframe-overlay { background:#3498db; }
+  #help-modal .mode-tag.iframe-replace { background:#27ae60; }
+  #help-modal .mode-tag.b64-fragment { background:#e67e22; }
+  #help-modal .mode-tag.raw { background:#6f2c91; }
+  .help-btn { background:#fff;color:#2c3e50;border:none;padding:4px 10px;border-radius:4px;font-size:14px;font-weight:bold;cursor:pointer; }
+</style>
+<style>
+  /* Unqork simulation mode */
+  .unqork-sim { display:flex; min-height:600px; }
+  .unqork-sim-left { flex:2; overflow-y:auto; background:#f4f4f6; }
+  .unqork-sim-right { flex:1; background:#1e1e2e; color:#e0e0e0; font-family:monospace; font-size:11px; overflow-y:auto; }
+  .unqork-sim .modal-header { background:#6f2c91; color:#fff; padding:10px 15px; font-weight:bold; font-size:14px; }
+  .unqork-sim .file-table { width:100%; border-collapse:collapse; margin:10px 15px; }
+  .unqork-sim .file-table th { background:#6f2c91; color:#fff; padding:6px 10px; text-align:left; font-size:11px; }
+  .unqork-sim .file-table td { padding:6px 10px; border-bottom:1px solid #eee; font-size:11px; }
+  .unqork-sim .ai-toggle { background:#6f2c91; color:#fff; border:none; padding:6px 14px; border-radius:6px; font-size:12px; cursor:pointer; }
+  .unqork-sim .ai-section { border-top:1px solid #ddd; }
+  .unqork-sim .ai-section-header { background:#6f2c91; color:#fff; padding:6px 15px; font-size:12px; }
+  .unqork-sim .ai-flex { display:flex; gap:12px; padding:12px 15px; }
+  .unqork-sim .ai-card { flex:1; border:1px solid #ddd; border-radius:6px; background:#fff; min-width:0; }
+  .unqork-sim .ai-card-header { background:#f5f5f7; padding:6px 10px; font-size:11px; font-weight:bold; border-radius:6px 6px 0 0; display:flex; justify-content:space-between; }
+  .unqork-sim .ai-card-body { padding:10px; }
+  .unqork-sim .ai-select, .unqork-sim .ai-textarea { width:100%; padding:6px; border:1px solid #ccc; border-radius:4px; font-size:11px; box-sizing:border-box; }
+  .unqork-sim .ai-textarea { height:60px; margin-top:6px; }
+  .unqork-sim .ai-generate { margin-top:6px; border:2px solid #6f2c91; background:#fff; color:#6f2c91; padding:5px 12px; border-radius:6px; font-size:11px; cursor:pointer; }
+  .unqork-sim .ai-generate:disabled { opacity:0.5; cursor:not-allowed; }
+  .unqork-sim .html-element-area { max-height:300px; overflow-y:auto; }
+  .unqork-sim .debug-section { padding:8px 12px; border-bottom:1px solid #333; }
+  .unqork-sim .debug-label { margin-bottom:4px; font-weight:bold; }
+  .unqork-sim .debug-label.req { color:#86efac; }
+  .unqork-sim .debug-label.res { color:#7dd3fc; }
+  .unqork-sim .debug-label.san { color:#fbbf24; }
+  .unqork-sim .debug-label.pipe { color:#c084fc; }
+  .unqork-sim .debug-pre { margin:0; color:#d4d4d4; font-size:10px; white-space:pre-wrap; word-break:break-all; }
+</style>
+</head>
+<body>
+<div id="toolbar">
+  <label>Mode:
+    <select id="mode-select">
+      <option value="iframe-overlay">iframe Overlay</option>
+      <option value="iframe-replace">iframe Replace</option>
+      <option value="b64-fragment">b64 Fragment</option>
+      <option value="raw">Raw Debug</option>
+    </select>
+  </label>
+  <label>Source:
+    <select id="source-select">
+      <option value="java">Live Java (:8081)</option>
+      <option value="mock">Python Mock (:8080)</option>
+      <option value="fixture">Static Fixture</option>
+    </select>
+  </label>
+  <label>Session ID: <input id="session-id" placeholder="(empty = stub demo session)" style="width:220px;"></label>
+  <label>
+    <select id="sample-adr-select" style="width:180px;">
+      <option value="bingham_callie_flc5_redacted.pdf">Bingham (Real ADR)</option>
+      <option value="anderson_adr_redacted.pdf">Anderson (Real ADR)</option>
+      <option value="sample_adr_1.pdf">Sample ADR 1 (Synthetic)</option>
+      <option value="sample_adr_2.pdf">Sample ADR 2 (Synthetic)</option>
+      <option value="sample_adr_3.pdf">Sample ADR 3 (Synthetic)</option>
+    </select>
+  </label>
+  <button id="load-session-btn" type="button" title="Upload sample ADR PDF and create a real agent session">&#x21e1; Load Session</button>
+  <button id="reload-btn" type="button">Load ADR Page</button>
+  <button class="help-btn" id="help-btn" type="button">?</button>
+</div>
+<div id="help-modal"><div class="help-content">
+  <div class="help-header"><h2>Test Harness Guide</h2><button class="help-close" id="help-close">&#x2715;</button></div>
+  <div class="help-body">
+
+<h3>Prerequisites</h3>
+<pre>
+# 1. Start the AI agent (port 8000)
+ENABLE_DEV_ROUTES=1 API_AUTH_TOKEN=dev-token-12345 VERTEX_AI_MODE=stub \
+  python -m uvicorn "src.api.app:create_app" --factory --port 8000
+
+# 2. (Optional) Start the Docker stack for legacy sources
+docker compose -f docker-compose.dev.yml up
+# Python mock on :8080, Java app on :8081
+</pre>
+<p>The harness auto-creates a demo session on load. <code>VERTEX_AI_MODE=stub</code> uses deterministic stub responses (no GCP credentials needed).</p>
+
+<h3><span class="mode-tag iframe-overlay">iframe-overlay</span> — iframe Overlay</h3>
+<p><b>What it tests:</b> Loads the ADR legacy page into <code>#stage</code>, then injects a fixed-position AI chat iframe in the bottom-right corner (the production integration pattern).</p>
+<ol>
+  <li>Select <b>iframe Overlay</b> mode and a source</li>
+  <li>Click <b>Load ADR Page</b></li>
+  <li>The legacy ADR page renders in <code>#stage</code> and the AI widget iframe appears bottom-right</li>
+  <li>Test chat functionality inside the overlay iframe</li>
+  <li>Verify: iframe resizes via <code>postMessage("careconnect:height")</code></li>
+  <li>Verify: <code>postMessage("careconnect:close")</code> toggles visibility</li>
+</ol>
+
+<h3><span class="mode-tag iframe-replace">iframe-replace</span> — iframe Replace</h3>
+<p><b>What it tests:</b> Loads the legacy ADR page into <code>#stage</code> only — no overlay widget. Use this to verify the raw legacy page loads correctly via each source before adding the overlay.</p>
+<ol>
+  <li>Select <b>iframe Replace</b> mode and a source</li>
+  <li>Click <b>Load ADR Page</b></li>
+  <li>The legacy page renders in <code>#stage</code> with no AI widget attached</li>
+  <li>Verify the legacy page structure and any embedded links</li>
+</ol>
+
+<h3><span class="mode-tag b64-fragment">b64-fragment</span> — b64 Fragment</h3>
+<p><b>What it tests:</b> Simulates the Unqork Plug-In → Hidden → HTML Element pipeline. Validates our HTML passes Unqork sanitization. Closest to production Unqork flow.</p>
+<ol>
+  <li>Select <b>b64 Fragment</b> mode</li>
+  <li>Click <b>Load ADR Page</b></li>
+  <li>Purple "Additional Documentation" layout appears (left), debug panel (right)</li>
+  <li>Click <b>"Ask AI Agent"</b> to expand the AI section</li>
+  <li>Select a preset question or type a free-text question</li>
+  <li>Click <b>"Generate AI Response"</b></li>
+  <li>Verify the right debug panel shows sanitization result: Tags/Attrs/Events stripped = 0</li>
+  <li>Ask a follow-up — verify full-replace (not append) behavior</li>
+</ol>
+
+<h3><span class="mode-tag raw">raw</span> — Raw Debug</h3>
+<p><b>What it tests:</b> Loads the legacy page into <code>#stage</code> with the full debug panel visible. Use to inspect raw HTML returned from any source without any widget injection.</p>
+<ol>
+  <li>Select <b>Raw Debug</b> mode and a source</li>
+  <li>Click <b>Load ADR Page</b></li>
+  <li>The legacy page HTML is rendered in <code>#stage</code></li>
+  <li>Inspect the source HTML in DevTools to verify structure and mount points</li>
+</ol>
+
+<h3>Source Selector</h3>
+<ul>
+  <li><b>Live Java (:8081)</b> — real Java app via Docker (<code>legacy-java</code> container)</li>
+  <li><b>Python Mock (:8080)</b> — Python mock server via Docker (<code>legacy</code> container)</li>
+  <li><b>Static Fixture</b> — <code>/static/fixtures/clinical-viewer-display.html</code> (no Docker needed)</li>
+</ul>
+
+<h3>Data Flow Reference</h3>
+<pre>
+Unqork Platform
+  │
+  ├─ Plug-In POST /memberADR/renderHtml
+  │   └─ Legacy Java app returns popup HTML
+  │
+  ├─ b64-fragment mode simulates:
+  │   Plug-In → Hidden component → Unqork sanitize → HTML Element (full replace)
+  │
+  ├─ iframe-overlay mode simulates:
+  │   Legacy page loads → fixed iframe widget overlays bottom-right
+  │   postMessage: careconnect:height, careconnect:close
+  │
+  └─ Agent API
+      POST /widget/v1/chat/query → {content_html, content_base64, ...}
+</pre>
+
+  </div>
+</div></div>
+<div id="stage"></div>
+
+<script>
+(function () {
+  var AGENT_BASE = window.location.origin;
+  var AUTH_TOKEN = {{ auth_token|tojson }};
+
+  var modeSel = document.getElementById("mode-select");
+  var sourceSel = document.getElementById("source-select");
+  var sessionIn = document.getElementById("session-id");
+  var reloadBtn = document.getElementById("reload-btn");
+
+  var loadSessionBtn = document.getElementById("load-session-btn");
+  var sampleSelect = document.getElementById("sample-adr-select");
+
+  var urlSession = new URLSearchParams(window.location.search).get("session_id");
+  if (urlSession) sessionIn.value = urlSession;
+
+  loadSessionBtn.addEventListener("click", loadSampleSession);
+
+  function loadSampleSession() {
+    var filename = sampleSelect.value;
+    loadSessionBtn.disabled = true;
+    loadSessionBtn.textContent = "Uploading…";
+
+    fetch("/dev/golden/adr/" + filename)
+      .then(function(r) { return r.blob(); })
+      .then(function(blob) {
+        var form = new FormData();
+        form.append("files", blob, filename);
+        return fetch("/api/v1/sessions/upload", {
+          method: "POST",
+          headers: { "Authorization": "Bearer " + AUTH_TOKEN },
+          body: form
+        });
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.session_id) {
+          sessionIn.value = data.session_id;
+          loadSessionBtn.textContent = "✓ " + data.session_id;
+          setTimeout(function() { loadSessionBtn.textContent = "⇡ Load Session"; }, 3000);
+        } else {
+          loadSessionBtn.textContent = "Error";
+        }
+      })
+      .catch(function(err) {
+        console.error("Load session failed:", err);
+        loadSessionBtn.textContent = "Failed";
+      })
+      .finally(function() {
+        loadSessionBtn.disabled = false;
+        setTimeout(function() { loadSessionBtn.textContent = "⇡ Load Session"; }, 5000);
+      });
+  }
+
+  function currentSessionId() {
+    var entered = sessionIn.value.trim();
+    if (entered) return entered;
+    if (!window._harnessSession) {
+      window._harnessSession = "harness-" + Math.random().toString(36).slice(2, 10);
+    }
+    return window._harnessSession;
+  }
+  function isRealSession() { return sessionIn.value.trim().length > 0; }
+
+  // ---------------------------------------------------------------------------
+  // Source-to-URL mapping
+  // ---------------------------------------------------------------------------
+  function getLegacyUrl() {
+    var source = document.getElementById('source-select').value;
+    if (source === 'java') return '{{ default_legacy_java_url }}';
+    if (source === 'mock') return '{{ default_legacy_url }}';
+    return '/static/fixtures/clinical-viewer-display.html';
+  }
+
+  // ---------------------------------------------------------------------------
+  // Legacy page loader — proxies live sources, fetches fixture directly
+  // ---------------------------------------------------------------------------
+  function loadLegacyPage(callback) {
+    var url = getLegacyUrl();
+    var source = document.getElementById('source-select').value;
+    if (source === 'fixture') {
+      fetch(url).then(function(r) { return r.text(); }).then(function(html) {
+        document.getElementById('stage').innerHTML = html;
+        if (callback) callback();
+      });
+    } else {
+      var requestBody = JSON.stringify({
+        correlationId: document.getElementById('session-id').value || 'demo-' + Date.now(),
+        receiverId: 'harness-dev',
+        userName: 'Dev Harness',
+        userEmail: 'dev@harness.local.com',
+        memberIdentifier: { idSource: 'EPIC', idValue: 'HARNESS-001' }
+      });
+      var proxyUrl = '/dev/legacy-proxy?url=' + encodeURIComponent(url) + '&body=' + encodeURIComponent(requestBody);
+      fetch(proxyUrl).then(function(r) { return r.text(); }).then(function(html) {
+        document.getElementById('stage').innerHTML = html;
+        if (callback) callback();
+      });
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // iframe Overlay helpers
+  // ---------------------------------------------------------------------------
+  function createOverlayIframe() {
+    var sessionId = document.getElementById('session-id').value || 'demo-' + Date.now();
+    var iframe = document.createElement('iframe');
+    iframe.id = 'ai-overlay-iframe';
+    iframe.src = '/widget/v1/chat/ui?sessionId=' + encodeURIComponent(sessionId) + '&mode=iframe';
+    iframe.style.cssText = 'position:fixed;bottom:70px;right:20px;width:400px;height:600px;border:1px solid #ccc;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.15);z-index:9999;background:#fff;';
+    document.body.appendChild(iframe);
+    createAiToggleButton();
+    window.addEventListener('message', function handler(ev) {
+      if (ev.data && ev.data.type === 'careconnect:height') {
+        iframe.style.height = Math.min(ev.data.height, 700) + 'px';
+      }
+      if (ev.data && ev.data.type === 'careconnect:close') {
+        toggleAiVisibility();
+      }
+    });
+  }
+
+  function createAiToggleButton() {
+    clearAiToggleButton();
+    var btn = document.createElement('button');
+    btn.id = 'ai-toggle-btn';
+    btn.textContent = 'Hide AI Agent';
+    btn.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:10000;background:#6f2c91;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-size:13px;cursor:pointer;';
+    btn.addEventListener('click', toggleAiVisibility);
+    document.body.appendChild(btn);
+  }
+
+  function toggleAiVisibility() {
+    var iframe = document.getElementById('ai-overlay-iframe');
+    var btn = document.getElementById('ai-toggle-btn');
+    if (!iframe) return;
+    if (iframe.style.display === 'none') {
+      iframe.style.display = '';
+      iframe.style.height = (window._lastOverlayHeight || 600) + 'px';
+      if (btn) btn.textContent = 'Hide AI Agent';
+    } else {
+      window._lastOverlayHeight = parseInt(iframe.style.height) || 600;
+      iframe.style.display = 'none';
+      if (btn) btn.textContent = 'Ask AI Agent';
+    }
+  }
+
+  function clearAiToggleButton() {
+    var existing = document.getElementById('ai-toggle-btn');
+    if (existing) existing.remove();
+  }
+
+  function clearOverlayIframe() {
+    var existing = document.getElementById('ai-overlay-iframe');
+    if (existing) existing.remove();
+    clearAiToggleButton();
+  }
+
+  // ---------------------------------------------------------------------------
+  // iframe-replace: inject embedded iframe + toggle into the additional-docs area
+  // ---------------------------------------------------------------------------
+  function createEmbeddedIframeToggle() {
+    var stage = document.getElementById('stage');
+    var sessionId = currentSessionId();
+
+    // Find the Additional Documentation heading in the rendered Java HTML
+    var headers = stage.querySelectorAll('h3');
+    var anchor = null;
+    for (var i = 0; i < headers.length; i++) {
+      if (headers[i].textContent.indexOf('Additional Documentation') !== -1) {
+        anchor = headers[i];
+        break;
+      }
+    }
+
+    // Build the iframe + toggle container
+    var wrapper = document.createElement('div');
+    wrapper.id = 'ai-replace-wrapper';
+    wrapper.style.cssText = 'margin-top:12px;';
+
+    var btn = document.createElement('button');
+    btn.id = 'ai-embedded-toggle';
+    btn.textContent = 'Hide AI Agent';
+    btn.style.cssText = 'background:#6f2c91;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-size:13px;cursor:pointer;';
+
+    var iframe = document.createElement('iframe');
+    iframe.id = 'ai-embedded-iframe';
+    iframe.src = '/widget/v1/chat/ui?sessionId=' + encodeURIComponent(sessionId) + '&mode=iframe&layout=embedded';
+    iframe.title = 'AI Assistant';
+    iframe.style.cssText = 'width:100%;min-height:500px;border:1px solid #e5e5e5;border-radius:8px;';
+
+    btn.addEventListener('click', function() {
+      if (iframe.style.display === 'none') {
+        iframe.style.display = '';
+        btn.textContent = 'Hide AI Agent';
+      } else {
+        iframe.style.display = 'none';
+        btn.textContent = 'Ask AI Agent';
+      }
+    });
+
+    var btnRow = document.createElement('div');
+    btnRow.style.cssText = 'text-align:right;padding:10px 15px;';
+    btnRow.appendChild(btn);
+    wrapper.appendChild(btnRow);
+    wrapper.appendChild(iframe);
+
+    if (anchor && anchor.parentElement) {
+      // Insert after the Additional Documentation header
+      anchor.parentElement.insertBefore(wrapper, anchor.nextSibling);
+    } else {
+      // Fallback: append to end of stage
+      stage.appendChild(wrapper);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Unified "Ask AI Agent" button injection — placed right-aligned in the
+  // rendered Java page, matching Farhan's prototype position
+  // ---------------------------------------------------------------------------
+  function injectAskAiButton(aiMode) {
+    var stage = document.getElementById('stage');
+    var sessionId = currentSessionId();
+
+    // Create the button row (right-aligned, matching Farhan's layout)
+    var btnRow = document.createElement('div');
+    btnRow.style.cssText = 'text-align:right;padding:10px 15px;';
+    var btn = document.createElement('button');
+    btn.id = 'ask-ai-btn';
+    btn.textContent = 'Ask AI Agent';
+    btn.style.cssText = 'background:#6f2c91;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-size:13px;cursor:pointer;';
+    btnRow.appendChild(btn);
+
+    // Create the AI section container (hidden by default)
+    var aiSection = document.createElement('div');
+    aiSection.id = 'ai-agent-section';
+    aiSection.style.display = 'none';
+
+    if (aiMode === 'b64') {
+      aiSection.innerHTML = buildB64AiSection();
+    } else {
+      var layout = aiMode === 'replace' ? '&layout=embedded' : '';
+      aiSection.innerHTML =
+        '<div style="background:#6f2c91;color:#fff;padding:8px 15px;font-size:13px;">AI Agent Assistance</div>'
+        + '<div style="padding:15px;">'
+        + '<iframe src="/widget/v1/chat/ui?sessionId=' + encodeURIComponent(sessionId) + '&mode=iframe' + layout + '"'
+        + ' style="width:100%;min-height:500px;border:1px solid #e5e5e5;border-radius:8px;" title="AI Assistant"></iframe>'
+        + '</div>';
+    }
+
+    // Toggle behavior
+    btn.addEventListener('click', function() {
+      if (aiSection.style.display === 'none') {
+        aiSection.style.display = 'block';
+        btn.textContent = 'Hide AI Agent';
+      } else {
+        aiSection.style.display = 'none';
+        btn.textContent = 'Ask AI Agent';
+      }
+    });
+
+    // Append at end of stage (after Java-rendered content)
+    stage.appendChild(btnRow);
+    stage.appendChild(aiSection);
+
+    // Wire up b64 event handlers if needed
+    if (aiMode === 'b64') {
+      wireB64Handlers();
+    }
+  }
+
+  function buildB64AiSection() {
+    return [
+      '<div class="ai-section-header" style="background:#6f2c91;color:#fff;padding:8px 15px;font-size:13px;">AI Agent Assistance</div>',
+      '<div class="ai-flex" style="display:flex;gap:15px;padding:15px;flex-wrap:wrap;">',
+        '<div class="ai-card" style="flex:1;min-width:300px;border:1px solid #ddd;border-radius:6px;background:#fff;">',
+          '<div class="ai-card-header" style="background:#f5f5f7;padding:8px 12px;font-size:12px;font-weight:bold;">Ask a Question</div>',
+          '<div class="ai-card-body" style="padding:12px;">',
+            '<select class="ai-select" id="sim-preset" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:4px;font-size:12px;">',
+              '<option value="">Select Question</option>',
+              '<option value="Give me the Timeline Of Care">Give me the Timeline Of Care</option>',
+              '<option value="Generate the Clinical Summary">Generate the Clinical Summary</option>',
+              '<option value="Summarize the evidence that Supports the Primary Diagnosis">Summarize the evidence...</option>',
+            '</select>',
+            '<textarea class="ai-textarea" id="sim-text" placeholder="Type your question..." style="width:100%;padding:8px;margin-top:5px;border:1px solid #ccc;border-radius:4px;font-size:12px;height:80px;box-sizing:border-box;"></textarea>',
+            '<br><br>',
+            '<button class="ai-generate" id="sim-generate" style="border:2px solid #6f2c91;background:#fff;color:#6f2c91;padding:7px 14px;border-radius:6px;font-size:12px;cursor:pointer;">Generate AI Response</button>',
+          '</div>',
+        '</div>',
+        '<div class="ai-card" style="flex:1;min-width:300px;border:1px solid #ddd;border-radius:6px;background:#fff;">',
+          '<div class="ai-card-header" style="background:#f5f5f7;padding:8px 12px;font-size:12px;font-weight:bold;display:flex;justify-content:space-between;"><span>AI Response</span><span style="font-weight:normal;color:#6f2c91;">&#8592; HTML Element</span></div>',
+          '<div class="ai-card-body" id="sim-html-element" style="padding:12px;max-height:320px;overflow-y:auto;">',
+            '<em style="color:#888;font-size:12px;">Conversation will appear here after querying...</em>',
+          '</div>',
+        '</div>',
+      '</div>',
+    ].join('');
+  }
+
+  // ---------------------------------------------------------------------------
+  // Mode-switching core
+  // ---------------------------------------------------------------------------
+  function activateMode() {
+    var mode = document.getElementById('mode-select').value;
+    clearOverlayIframe();
+    document.getElementById('stage').innerHTML = '';
+
+    if (mode === 'b64-fragment') {
+      loadLegacyPage(function() { injectAskAiButton('b64'); });
+    } else if (mode === 'iframe-overlay') {
+      loadLegacyPage(function() { injectAskAiButton('overlay'); });
+    } else if (mode === 'iframe-replace') {
+      loadLegacyPage(function() { injectAskAiButton('replace'); });
+    } else {
+      loadLegacyPage();
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // b64-fragment mode — Unqork Plug-In simulation panel
+  // ---------------------------------------------------------------------------
+  function unqorkSanitize(html) {
+    var div = document.createElement("div");
+    div.innerHTML = html;
+    div.querySelectorAll("script,iframe").forEach(function(el) { el.remove(); });
+    var stripped = { tags: 0, attrs: 0, events: 0 };
+    var safeAttrs = new Set([
+      "class","style","id","href","target","title","width",
+      "height","role","src","alt","colspan","rowspan"
+    ]);
+    div.querySelectorAll("*").forEach(function(el) {
+      Array.from(el.attributes).forEach(function(attr) {
+        if (attr.name.startsWith("on")) {
+          el.removeAttribute(attr.name);
+          stripped.events++;
+        } else if (!safeAttrs.has(attr.name)) {
+          el.removeAttribute(attr.name);
+          stripped.attrs++;
+        }
+      });
+    });
+    return { html: div.innerHTML, stripped: stripped };
+  }
+
+  function wireB64Handlers() {
+    var preset = document.getElementById("sim-preset");
+    var textArea = document.getElementById("sim-text");
+    var genBtn = document.getElementById("sim-generate");
+    var htmlElement = document.getElementById("sim-html-element");
+    if (!preset || !textArea || !genBtn || !htmlElement) return;
+
+    preset.addEventListener("change", function() {
+      if (preset.value) textArea.value = preset.value;
+    });
+
+    textArea.addEventListener("keydown", function(e) {
+      if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); doGenerate(); }
+    });
+
+    genBtn.addEventListener("click", doGenerate);
+
+    async function doGenerate() {
+      var text = textArea.value.trim();
+      if (!text) return;
+      genBtn.disabled = true;
+      genBtn.textContent = "Generating...";
+
+      var reqBody = { session_id: currentSessionId(), message: text };
+      var reqUrl = AGENT_BASE + "/widget/v1/chat/query";
+
+      var startMs = performance.now();
+      try {
+        var r = await fetch(reqUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Authorization": "Bearer " + AUTH_TOKEN },
+          body: JSON.stringify(reqBody)
+        });
+        var data = await r.json();
+        var elapsed = Math.round(performance.now() - startMs);
+
+        var san = unqorkSanitize(data.content_html || "");
+
+        // Full replace — simulates Unqork HTML Element behaviour
+        // Wrap in Farhan-style response block with meta row
+        var timestamp = new Date().toLocaleString('en-US', {
+          day:'2-digit', month:'short', year:'numeric', hour:'numeric', minute:'2-digit'
+        });
+        var blockId = 'resp-' + Date.now();
+        var responseBlock = '<div style="background:#fafafa;border:1px solid #e2e2e2;border-radius:8px;padding:8px;margin-bottom:10px;">'
+          + '<div style="font-weight:bold;color:#6f2c91;margin-bottom:4px;">Q: ' + text.replace(/</g,'&lt;') + '</div>'
+          + '<div>' + san.html + '</div>'
+          + '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">'
+          + '<div style="font-size:10px;color:#888;">Generated on: ' + timestamp + '</div>'
+          + '<div style="display:flex;gap:10px;">'
+          + '<span style="cursor:pointer;opacity:0.7;" onclick="navigator.clipboard.writeText(this.closest(\'div[style*=fafafa]\').innerText)">&#x1F4CB;</span>'
+          + '<span style="cursor:pointer;opacity:0.7;" onclick="this.style.color=\'green\'">&#x1F44D;</span>'
+          + '<span style="cursor:pointer;opacity:0.7;" onclick="this.style.color=\'red\'">&#x1F44E;</span>'
+          + '</div></div></div>';
+        htmlElement.innerHTML = (htmlElement.querySelector('em') ? '' : htmlElement.innerHTML) + responseBlock;
+
+      } catch (e) {
+        document.querySelector("#sim-debug-res .debug-pre").textContent = "ERROR: " + e.message;
+        htmlElement.innerHTML = '<div style="color:red;padding:10px;">Error: ' + e.message + '</div>';
+      } finally {
+        genBtn.disabled = false;
+        genBtn.textContent = "Generate AI Response";
+        textArea.value = "";
+        preset.value = "";
+      }
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Demo session bootstrap
+  // ---------------------------------------------------------------------------
+  var demoSessionReady = false;
+  async function ensureDemoSession() {
+    if (isRealSession()) return;
+    if (demoSessionReady) return;
+    try {
+      await fetch("/dev/demo-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ session_id: currentSessionId() })
+      });
+      demoSessionReady = true;
+    } catch (e) { /* demo endpoint may not be registered in prod */ }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Top-level reload — wires "Load ADR Page" button
+  // ---------------------------------------------------------------------------
+  async function reload() {
+    await ensureDemoSession();
+    activateMode();
+  }
+
+  function pollStatus(correlationId, legacyBase) {
+    var url = legacyBase.replace(/\/memberADR\/renderHtml$/, "") + "/memberADR/v1/status/" + encodeURIComponent(correlationId);
+    var proxied = "/dev/legacy-proxy?method=GET&url=" + encodeURIComponent(url);
+    fetch(proxied).then(function (r) { return r.json(); }).then(function (data) {
+      var stageEl = document.getElementById('stage');
+      var flcBtn = stageEl.querySelector('[onclick*="fullLegalChart"]');
+      var ibBtn = stageEl.querySelector('[onclick*="itemizedBill"]');
+      if (flcBtn && data.fullLegalChart) flcBtn.disabled = data.fullLegalChart.inProgress;
+      if (ibBtn && data.itemizedBill) ibBtn.disabled = data.itemizedBill.inProgress;
+    }).catch(function () { /* ignore in demo */ });
+  }
+
+  // Expose for demo testing / manual browser console use
+  window.ccPollStatus = pollStatus;
+
+  var helpModal = document.getElementById("help-modal");
+  document.getElementById("help-btn").addEventListener("click", function() { helpModal.classList.add("active"); });
+  document.getElementById("help-close").addEventListener("click", function() { helpModal.classList.remove("active"); });
+  helpModal.addEventListener("click", function(e) { if (e.target === helpModal) helpModal.classList.remove("active"); });
+
+  reloadBtn.addEventListener("click", reload);
+  modeSel.addEventListener("change", reload);
+  sourceSel.addEventListener("change", reload);
+  sessionIn.addEventListener("change", function () { demoSessionReady = false; reload(); });
+  reload();
+})();
+</script>
+</body>
+</html>

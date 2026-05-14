@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADR AI Assistant</title>
+    <link rel="stylesheet" href="/static/chat.css">
+</head>
+<body>
+    <div id="chat-app">
+        <div id="chat-header">
+            <h3>ADR AI Assistant</h3>
+            <span id="session-badge">Session: {{ session_id }}</span>
+        </div>
+        <div id="chat-messages"></div>
+        <div id="chat-loading" class="hidden">
+            <div class="spinner"></div>
+            <span>Analyzing documents...</span>
+        </div>
+        <div id="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Ask a question about the ADR documents..." autocomplete="off">
+            <button id="send-btn" type="button">Send</button>
+        </div>
+    </div>
+
+    <script>
+        window.ADR_CONFIG = {
+            sessionId: "{{ session_id }}",
+            apiBase: "{{ api_base }}",
+            authToken: "{{ auth_token }}"
+        };
+    </script>
+    <script src="/static/chat.js"></script>
+</body>
+</html>
