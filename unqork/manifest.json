@@ -1,0 +1,24 @@
+{
+    "name": "adr-chatbot",
+    "version": "1.0.0",
+    "description": "ADR AI Assistant chatbot component for CareConnect",
+    "type": "component",
+    "entry": "adr-chatbot.js",
+    "properties": {
+        "apiBaseUrl": {
+            "type": "string",
+            "description": "Base URL for the ADR AI Agent API",
+            "required": true
+        },
+        "authToken": {
+            "type": "string",
+            "description": "Bearer token for API authentication",
+            "required": true
+        },
+        "sessionId": {
+            "type": "string",
+            "description": "Active session ID (set after session initialization)",
+            "required": false
+        }
+    }
+}
