@@ -1,0 +1,608 @@
+aiofiles==25.1.0
+    # via careconnect-adr-ai-agent (pyproject.toml)
+aiohappyeyeballs==2.6.1
+    # via aiohttp
+aiohttp==3.13.5
+    # via langchain-community
+aiosignal==1.4.0
+    # via aiohttp
+annotated-doc==0.0.4
+    # via fastapi
+annotated-types==0.7.0
+    # via pydantic
+anyio==4.13.0
+    # via
+    #   google-genai
+    #   httpx
+    #   starlette
+    #   watchfiles
+asgiref==3.11.1
+    # via opentelemetry-instrumentation-asgi
+asyncpg==0.31.0
+    # via
+    #   careconnect-adr-ai-agent (pyproject.toml)
+    #   langchain-postgres
+attrs==26.1.0
+    # via aiohttp
+bleach==6.3.0
+    # via careconnect-adr-ai-agent (pyproject.toml)
+boolean-py==5.0
+    # via license-expression
+bottleneck==1.6.0
+    # via langchain-google-vertexai
+cachecontrol==0.14.4
+    # via
+    #   cachecontrol
+    #   pip-audit
+certifi==2026.4.22
+    # via
+    #   httpcore
+    #   httpx
+    #   requests
+cffi==2.0.0
+    # via
+    #   cryptography
+    #   pytest-codspeed
+charset-normalizer==3.4.7
+    # via requests
+click==8.3.3
+    # via
+    #   click-option-group
+    #   python-semantic-release
+    #   uvicorn
+click-option-group==0.5.9
+    # via python-semantic-release
+coverage==7.13.5
+    # via pytest-cov
+cryptography==47.0.0
+    # via google-auth
+cyclonedx-python-lib==11.7.0
+    # via pip-audit
+dataclasses-json==0.6.7
+    # via langchain-community
+defusedxml==0.7.1
+    # via py-serializable
+deprecated==1.3.1
+    # via python-semantic-release
+distro==1.9.0
+    # via google-genai
+dnspython==2.8.0
+    # via pymongo
+docstring-parser==0.18.0
+    # via google-cloud-aiplatform
+dotty-dict==1.3.1
+    # via python-semantic-release
+fastapi==0.136.1
+    # via careconnect-adr-ai-agent (pyproject.toml)
+filelock==3.29.0
+    # via cachecontrol
+filetype==1.2.0
+    # via langchain-google-genai
+frozenlist==1.8.0
+    # via
+    #   aiohttp
+    #   aiosignal
+gitdb==4.0.12
+    # via gitpython
+gitpython==3.1.49
+    # via python-semantic-release
+google-api-core==2.30.3
+    # via
+    #   google-cloud-aiplatform
+    #   google-cloud-bigquery
+    #   google-cloud-core
+    #   google-cloud-resource-manager
+    #   google-cloud-storage
+    #   google-cloud-vectorsearch
+google-auth==2.49.2
+    # via
+    #   google-api-core
+    #   google-cloud-aiplatform
+    #   google-cloud-bigquery
+    #   google-cloud-core
+    #   google-cloud-resource-manager
+    #   google-cloud-storage
+    #   google-cloud-vectorsearch
+    #   google-genai
+google-cloud-aiplatform==1.149.0
+    # via
+    #   careconnect-adr-ai-agent (pyproject.toml)
+    #   langchain-google-vertexai
+google-cloud-bigquery==3.41.0
+    # via google-cloud-aiplatform
+google-cloud-core==2.5.1
+    # via
+    #   google-cloud-bigquery
+    #   google-cloud-storage
+google-cloud-resource-manager==1.17.0
+    # via google-cloud-aiplatform
+google-cloud-storage==3.10.1
+    # via
+    #   careconnect-adr-ai-agent (pyproject.toml)
+    #   google-cloud-aiplatform
+    #   langchain-google-vertexai
+google-cloud-vectorsearch==0.10.0
+    # via langchain-google-vertexai
+google-crc32c==1.8.0
+    # via
+    #   google-cloud-storage
+    #   google-resumable-media
+google-genai==1.73.1
+    # via
+    #   careconnect-adr-ai-agent (pyproject.toml)
+    #   google-cloud-aiplatform
+    #   langchain-google-genai
+google-resumable-media==2.8.2
+    # via
+    #   google-cloud-bigquery
+    #   google-cloud-storage
+googleapis-common-protos==1.74.0
+    # via
+    #   google-api-core
+    #   grpc-google-iam-v1
+    #   grpcio-status
+greenlet==3.5.0
+    # via sqlalchemy
+grpc-google-iam-v1==0.14.4
+    # via google-cloud-resource-manager
+grpcio==1.80.0
+    # via
+    #   google-api-core
+    #   google-cloud-resource-manager
+    #   google-cloud-vectorsearch
+    #   googleapis-common-protos
+    #   grpc-google-iam-v1
+    #   grpcio-status
+grpcio-status==1.80.0
+    # via google-api-core
+h11==0.16.0
+    # via
+    #   httpcore
+    #   uvicorn
+httpcore==1.0.9
+    # via httpx
+httptools==0.7.1
+    # via uvicorn
+httpx==0.28.1
+    # via
+    #   careconnect-adr-ai-agent (pyproject.toml)
+    #   google-genai
+    #   langchain-google-vertexai
+    #   langchain-tests
+    #   langgraph-sdk
+    #   langsmith
+    #   respx
+httpx-sse==0.4.3
+    # via
+    #   langchain-community
+    #   langchain-google-vertexai
+idna==3.13
+    # via
+    #   anyio
+    #   httpx
+    #   requests
+    #   yarl
+importlib-metadata==8.7.1
+    # via opentelemetry-api
+importlib-resources==6.5.2
+    # via python-semantic-release
+iniconfig==2.3.0
+    # via pytest
+jinja2==3.1.6
+    # via
+    #   careconnect-adr-ai-agent (pyproject.toml)
+    #   python-semantic-release
+jsonpatch==1.33
+    # via langchain-core
+jsonpointer==3.1.1
+    # via jsonpatch
+langchain==1.2.15
+    # via careconnect-adr-ai-agent (pyproject.toml)
+langchain-classic==1.0.4
+    # via
+    #   careconnect-adr-ai-agent (pyproject.toml)
+    #   langchain-community
+langchain-community==0.4.1
+    # via careconnect-adr-ai-agent (pyproject.toml)
+langchain-core==1.3.2
+    # via
+    #   careconnect-adr-ai-agent (pyproject.toml)
+    #   langchain
+    #   langchain-classic
+    #   langchain-community
+    #   langchain-google-genai
+    #   langchain-google-vertexai
+    #   langchain-postgres
+    #   langchain-tests
+    #   langchain-text-splitters
+    #   langgraph
+    #   langgraph-checkpoint
+    #   langgraph-prebuilt
+langchain-google-genai==4.2.2
+    # via careconnect-adr-ai-agent (pyproject.toml)
+langchain-google-vertexai==3.2.2
+    # via careconnect-adr-ai-agent (pyproject.toml)
+langchain-postgres==0.0.17
+    # via careconnect-adr-ai-agent (pyproject.toml)
+langchain-protocol==0.0.14
+    # via langchain-core
+langchain-tests==1.1.7
+    # via langchain-google-vertexai
+langchain-text-splitters==1.1.2
+    # via
+    #   careconnect-adr-ai-agent (pyproject.toml)
+    #   langchain-classic
+langgraph==1.1.10
+    # via
+    #   careconnect-adr-ai-agent (pyproject.toml)
+    #   langchain
+langgraph-checkpoint==4.0.3
+    # via
+    #   langgraph
+    #   langgraph-prebuilt
+langgraph-prebuilt==1.0.12
+    # via langgraph
+langgraph-sdk==0.3.13
+    # via langgraph
+langsmith==0.7.38
+    # via
+    #   langchain-classic
+    #   langchain-community
+    #   langchain-core
+librt==0.9.0
+    # via mypy
+license-expression==30.4.4
+    # via cyclonedx-python-lib
+markdown==3.10.2
+    # via careconnect-adr-ai-agent (pyproject.toml)
+markdown-it-py==4.0.0
+    # via rich
+markupsafe==3.0.3
+    # via jinja2
+marshmallow==3.26.2
+    # via dataclasses-json
+mdurl==0.1.2
+    # via markdown-it-py
+motor==3.7.1
+    # via careconnect-adr-ai-agent (pyproject.toml)
+msgpack==1.1.2
+    # via cachecontrol
+multidict==6.7.1
+    # via
+    #   aiohttp
+    #   yarl
+mypy==1.20.2
+    # via careconnect-adr-ai-agent (pyproject.toml)
+mypy-extensions==1.1.0
+    # via
+    #   mypy
+    #   typing-inspect
+numexpr==2.14.1
+    # via langchain-google-vertexai
+numpy==2.4.4
+    # via
+    #   bottleneck
+    #   langchain-community
+    #   langchain-postgres
+    #   langchain-tests
+    #   numexpr
+    #   pgvector
+    #   rank-bm25
+opentelemetry-api==1.41.1
+    # via
+    #   careconnect-adr-ai-agent (pyproject.toml)
+    #   opentelemetry-instrumentation
+    #   opentelemetry-instrumentation-asgi
+    #   opentelemetry-instrumentation-fastapi
+    #   opentelemetry-sdk
+    #   opentelemetry-semantic-conventions
+opentelemetry-instrumentation==0.62b1
+    # via
+    #   opentelemetry-instrumentation-asgi
+    #   opentelemetry-instrumentation-fastapi
+opentelemetry-instrumentation-asgi==0.62b1
+    # via opentelemetry-instrumentation-fastapi
+opentelemetry-instrumentation-fastapi==0.62b1
+    # via careconnect-adr-ai-agent (pyproject.toml)
+opentelemetry-sdk==1.41.1
+    # via careconnect-adr-ai-agent (pyproject.toml)
+opentelemetry-semantic-conventions==0.62b1
+    # via
+    #   opentelemetry-instrumentation
+    #   opentelemetry-instrumentation-asgi
+    #   opentelemetry-instrumentation-fastapi
+    #   opentelemetry-sdk
+opentelemetry-util-http==0.62b1
+    # via
+    #   opentelemetry-instrumentation-asgi
+    #   opentelemetry-instrumentation-fastapi
+orjson==3.11.8
+    # via
+    #   langgraph-sdk
+    #   langsmith
+ormsgpack==1.12.2
+    # via langgraph-checkpoint
+packageurl-python==0.17.6
+    # via cyclonedx-python-lib
+packaging==26.2
+    # via
+    #   google-cloud-aiplatform
+    #   google-cloud-bigquery
+    #   langchain-core
+    #   langsmith
+    #   marshmallow
+    #   opentelemetry-instrumentation
+    #   pip-audit
+    #   pip-requirements-parser
+    #   pytest
+pathspec==1.1.1
+    # via mypy
+pgvector==0.3.6
+    # via
+    #   careconnect-adr-ai-agent (pyproject.toml)
+    #   langchain-postgres
+pip-api==0.0.34
+    # via pip-audit
+pip-audit==2.10.0
+    # via careconnect-adr-ai-agent (pyproject.toml)
+pip-requirements-parser==32.0.1
+    # via pip-audit
+platformdirs==4.9.6
+    # via pip-audit
+pluggy==1.6.0
+    # via
+    #   pytest
+    #   pytest-cov
+propcache==0.4.1
+    # via
+    #   aiohttp
+    #   yarl
+proto-plus==1.27.2
+    # via
+    #   google-api-core
+    #   google-cloud-aiplatform
+    #   google-cloud-resource-manager
+    #   google-cloud-vectorsearch
+protobuf==6.33.6
+    # via
+    #   google-api-core
+    #   google-cloud-aiplatform
+    #   google-cloud-resource-manager
+    #   google-cloud-vectorsearch
+    #   googleapis-common-protos
+    #   grpc-google-iam-v1
+    #   grpcio-status
+    #   proto-plus
+psycopg==3.3.3
+    # via
+    #   careconnect-adr-ai-agent (pyproject.toml)
+    #   langchain-postgres
+psycopg-binary==3.3.3
+    # via psycopg
+psycopg-pool==3.3.0
+    # via
+    #   langchain-postgres
+    #   psycopg
+py-cpuinfo==9.0.0
+    # via pytest-benchmark
+py-serializable==2.1.0
+    # via cyclonedx-python-lib
+pyarrow==22.0.0
+    # via langchain-google-vertexai
+pyasn1==0.6.3
+    # via pyasn1-modules
+pyasn1-modules==0.4.2
+    # via google-auth
+pycparser==3.0
+    # via cffi
+pydantic==2.13.3
+    # via
+    #   careconnect-adr-ai-agent (pyproject.toml)
+    #   fastapi
+    #   google-cloud-aiplatform
+    #   google-genai
+    #   langchain
+    #   langchain-classic
+    #   langchain-core
+    #   langchain-google-genai
+    #   langchain-google-vertexai
+    #   langgraph
+    #   langsmith
+    #   pydantic-settings
+    #   python-semantic-release
+pydantic-core==2.46.3
+    # via pydantic
+pydantic-settings==2.14.0
+    # via langchain-community
+pygments==2.20.0
+    # via
+    #   pytest
+    #   rich
+pymongo==4.17.0
+    # via
+    #   careconnect-adr-ai-agent (pyproject.toml)
+    #   motor
+pyparsing==3.3.2
+    # via pip-requirements-parser
+pypdf2==3.0.1
+    # via careconnect-adr-ai-agent (pyproject.toml)
+pytest==9.0.3
+    # via
+    #   careconnect-adr-ai-agent (pyproject.toml)
+    #   langchain-tests
+    #   pytest-asyncio
+    #   pytest-benchmark
+    #   pytest-codspeed
+    #   pytest-cov
+    #   pytest-mock
+    #   pytest-recording
+    #   pytest-socket
+    #   syrupy
+pytest-asyncio==1.3.0
+    # via
+    #   careconnect-adr-ai-agent (pyproject.toml)
+    #   langchain-tests
+pytest-benchmark==5.2.3
+    # via langchain-tests
+pytest-codspeed==4.5.0
+    # via langchain-tests
+pytest-cov==7.1.0
+    # via careconnect-adr-ai-agent (pyproject.toml)
+pytest-mock==3.15.1
+    # via careconnect-adr-ai-agent (pyproject.toml)
+pytest-recording==0.13.4
+    # via langchain-tests
+pytest-socket==0.7.0
+    # via langchain-tests
+python-dateutil==2.9.0.post0
+    # via google-cloud-bigquery
+python-dotenv==1.2.2
+    # via
+    #   careconnect-adr-ai-agent (pyproject.toml)
+    #   pydantic-settings
+    #   uvicorn
+python-gitlab==5.6.0
+    # via python-semantic-release
+python-multipart==0.0.27
+    # via careconnect-adr-ai-agent (pyproject.toml)
+python-semantic-release==9.21.1
+    # via careconnect-adr-ai-agent (pyproject.toml)
+pyyaml==6.0.3
+    # via
+    #   langchain-classic
+    #   langchain-community
+    #   langchain-core
+    #   uvicorn
+    #   vcrpy
+rank-bm25==0.2.2
+    # via careconnect-adr-ai-agent (pyproject.toml)
+requests==2.33.1
+    # via
+    #   cachecontrol
+    #   google-api-core
+    #   google-auth
+    #   google-cloud-bigquery
+    #   google-cloud-storage
+    #   google-genai
+    #   langchain-classic
+    #   langchain-community
+    #   langsmith
+    #   pip-audit
+    #   python-gitlab
+    #   python-semantic-release
+    #   requests-toolbelt
+requests-toolbelt==1.0.0
+    # via
+    #   langsmith
+    #   python-gitlab
+respx==0.23.1
+    # via careconnect-adr-ai-agent (pyproject.toml)
+rich==14.3.4
+    # via
+    #   pip-audit
+    #   pytest-codspeed
+    #   python-semantic-release
+ruff==0.15.12
+    # via careconnect-adr-ai-agent (pyproject.toml)
+shellingham==1.5.4
+    # via python-semantic-release
+six==1.17.0
+    # via python-dateutil
+smmap==5.0.3
+    # via gitdb
+sniffio==1.3.1
+    # via google-genai
+sortedcontainers==2.4.0
+    # via cyclonedx-python-lib
+sqlalchemy==2.0.49
+    # via
+    #   careconnect-adr-ai-agent (pyproject.toml)
+    #   langchain-classic
+    #   langchain-community
+    #   langchain-postgres
+starlette==1.0.0
+    # via fastapi
+syrupy==5.1.0
+    # via langchain-tests
+tenacity==9.1.4
+    # via
+    #   google-genai
+    #   langchain-community
+    #   langchain-core
+tinycss2==1.5.1
+    # via careconnect-adr-ai-agent (pyproject.toml)
+tomli==2.4.1
+    # via pip-audit
+tomli-w==1.2.0
+    # via pip-audit
+tomlkit==0.14.0
+    # via python-semantic-release
+typing-extensions==4.15.0
+    # via
+    #   fastapi
+    #   google-cloud-aiplatform
+    #   google-genai
+    #   grpcio
+    #   langchain-core
+    #   langchain-protocol
+    #   mypy
+    #   opentelemetry-api
+    #   opentelemetry-sdk
+    #   opentelemetry-semantic-conventions
+    #   psycopg-pool
+    #   pydantic
+    #   pydantic-core
+    #   sqlalchemy
+    #   typing-inspect
+    #   typing-inspection
+typing-inspect==0.9.0
+    # via dataclasses-json
+typing-inspection==0.4.2
+    # via
+    #   fastapi
+    #   pydantic
+    #   pydantic-settings
+urllib3==2.6.3
+    # via requests
+uuid-utils==0.14.1
+    # via
+    #   langchain-core
+    #   langsmith
+uvicorn==0.46.0
+    # via careconnect-adr-ai-agent (pyproject.toml)
+uvloop==0.22.1
+    # via uvicorn
+validators==0.35.0
+    # via langchain-google-vertexai
+vcrpy==8.1.1
+    # via
+    #   langchain-tests
+    #   pytest-recording
+watchfiles==1.1.1
+    # via uvicorn
+webencodings==0.5.1
+    # via
+    #   bleach
+    #   tinycss2
+websockets==16.0
+    # via
+    #   google-genai
+    #   uvicorn
+wrapt==2.1.2
+    # via
+    #   deprecated
+    #   opentelemetry-instrumentation
+    #   vcrpy
+xxhash==3.7.0
+    # via
+    #   langgraph
+    #   langsmith
+yarl==1.23.0
+    # via aiohttp
+zipp==3.23.1
+    # via importlib-metadata
+zstandard==0.25.0
+    # via langsmith
+
+# The following packages are considered to be unsafe in a requirements file:
+# pip

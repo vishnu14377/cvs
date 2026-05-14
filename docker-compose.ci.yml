@@ -1,0 +1,25 @@
+# CI override — removes host ADC mount (runners don't have gcloud auth
+# application-default login). Vertex AI is stubbed (VERTEX_AI_MODE=stub)
+# and GCS uses the fake-gcs-server emulator via STORAGE_EMULATOR_HOST.
+#
+# Also provides a blank env_file so docker compose doesn't fail when
+# the developer-only .env file is absent on CI runners.
+
+services:
+  api:
+    env_file:
+      - .env.example
+    environment:
+      # Integration tests send "dev-token-12345" via TEST_AUTH_TOKEN. The
+      # API container reads API_AUTH_TOKEN from the environment; override
+      # the .env.example default ("change-me-to-a-secure-token") to match.
+      API_AUTH_TOKEN: dev-token-12345
+      # Runners have no GCP credentials — app must honor the stub flag for
+      # LangChainClient, EmbeddingClient, and VertexAIClient to substitute
+      # StubChatModel / StubEmbeddings / stub_raw_predict_response.
+      VERTEX_AI_MODE: stub
+      # Bucket matches docker/seed-gcs.sh; prefix matches .env.example default.
+      # With the fake-gcs-server, these resolve against STORAGE_EMULATOR_HOST.
+      GCS_BUCKET_NAME: adr-ai-agent-dev
+      AI_AGENT_PREFIX_GCS: adr_ai_agent
+    volumes: []

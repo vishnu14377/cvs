@@ -1,0 +1,98 @@
+# Dev override — adds the legacy mock service and configures the full
+# Unqork → Legacy → AI Agent stack for local E2E testing.
+#
+# Usage:
+#   docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+#
+# Services:
+#   api        — AI Agent (port 8000) with dev routes enabled
+#   legacy     — Mock member-adr-oci service (port 8080)
+#   postgres   — pgvector for embeddings
+#   mongodb    — feedback storage
+#   gcs        — fake GCS server
+#
+# Open http://localhost:8000/dev/unqork-mock, set Source to "Live legacy",
+# and Legacy URL to http://localhost:8080/memberADR/renderHtml.
+
+services:
+  api:
+    environment:
+      - ENABLE_DEV_ROUTES=1
+      - VERTEX_AI_MODE=${VERTEX_AI_MODE:-stub}
+      - API_AUTH_TOKEN=dev-token-12345
+      - CARECONNECT_WIDGET_TOKEN=dev-token-12345
+      # Browser-accessible URL for the GCS emulator (docker-internal is gcs:4443)
+      - GCS_EXTERNAL_URL=http://localhost:4443
+      # Point the harness form at the docker legacy services by default
+      - DEV_DEFAULT_LEGACY_URL=http://legacy:8080/memberADR/renderHtml
+      - DEV_DEFAULT_LEGACY_JAVA_URL=http://legacy-java:8080/caremanagement/cs/v1/edb/additionalclinicaldocumentations/at/adrs/details/retrieve
+      - DEV_LEGACY_PROXY_HOSTS=legacy-java
+      - DEV_GCS_SEED_BUCKET=adr-ai-agent-dev
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
+      gcs:
+        condition: service_started
+      legacy:
+        condition: service_healthy
+
+  legacy:
+    build:
+      context: ./docker/legacy-mock
+    ports:
+      - "8080:8080"
+    environment:
+      - CARECONNECT_AI_ENDPOINT=http://localhost:8000
+      - CARECONNECT_AI_MODE=iframe
+      - PORT=8080
+    volumes:
+      - ./src/api/static/fixtures/clinical-viewer-display.html:/fixtures/clinical-viewer-display.html:ro
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/health')"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+
+  postgres-java:
+    image: postgres:16
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: memberadr
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - ./docker/legacy-java/init-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./docker/legacy-java/seed-data.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+      - pgdata-java:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  legacy-java:
+    build:
+      context: ../care-connect_member-adr-oci
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=local-docker
+      - SPRING_CONFIG_IMPORT=
+      - SPRING_CLOUD_GCP_SECRETMANAGER_ENABLED=false
+      - SPRING_CLOUD_GCP_PROJECT_ID=dummy
+      - GOOGLE_APPLICATION_CREDENTIALS=/tmp/adc.json
+      - OTEL_SDK_DISABLED=true
+      - CARECONNECT_AI_ENDPOINT=http://localhost:8000
+      - CARECONNECT_AI_MODE=iframe
+    volumes:
+      - ${HOME}/.config/gcloud/application_default_credentials.json:/tmp/adc.json:ro
+    depends_on:
+      postgres-java:
+        condition: service_healthy
+
+volumes:
+  pgdata-java:
